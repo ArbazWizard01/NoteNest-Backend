@@ -2,7 +2,6 @@ const express = require("express");
 const { MongoClient, ObjectId } = require("mongodb");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const e = require("express");
 
 const app = express();
 const port = 8000;
@@ -23,8 +22,8 @@ const main = async () => {
     await client.connect();
     console.log("Connected to MongoDB");
 
-    const db = client.db(dbName); // Get the database
-    const notesCollection = db.collection(collectionName); // Get the collection
+    const db = client.db(dbName); 
+    const notesCollection = db.collection(collectionName); 
 
     app.post("/", async (req, res) => {
       const { title, content } = req.body;
@@ -67,6 +66,32 @@ const main = async () => {
       } catch (err) {
         console.error("Error deleting note:", err);
         res.status(500).json({ message: "Failed to delete note" });
+      }
+    });
+
+    app.put("./:id", async (req, res) => {
+      const { id } = req.params;
+      const { title, content } = req.body;
+
+      if (!title || !content) {
+        return res
+          .status(400)
+          .json({ message: "Title and Content is required" });
+      }
+
+      try {
+        const result = await notesCollection.updateOne(
+          { _id: new ObjectId(id) },
+          { $set: { title, content, updateAt: new Date() } }
+        );
+        if (result.modifiedCount == 1) {
+          res.status(200).json({ message: "Note updated successfully" });
+        } else {
+          res.status(404).json({ message: "Note not found!" });
+        }
+      } catch (err) {
+        console.error("Error updating note: ", err);
+        res.status(500).json({ message: "Failed to update note" });
       }
     });
 
