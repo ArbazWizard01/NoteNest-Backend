@@ -8,6 +8,10 @@ const port = 8000;
 
 app.use(bodyParser.json());
 app.use(cors());
+app.use((req, res, next) => {
+  console.log(`Incoming request: [${req.method}] ${req.url}`);
+  next();
+});
 
 const uri =
   "mongodb+srv://arbaz957:arbaz4dev@cluster0.shesi.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
@@ -22,8 +26,8 @@ const main = async () => {
     await client.connect();
     console.log("Connected to MongoDB");
 
-    const db = client.db(dbName); 
-    const notesCollection = db.collection(collectionName); 
+    const db = client.db(dbName);
+    const notesCollection = db.collection(collectionName);
 
     app.post("/", async (req, res) => {
       const { title, content } = req.body;
@@ -69,9 +73,16 @@ const main = async () => {
       }
     });
 
-    app.put("./:id", async (req, res) => {
+    app.put("/:id", async (req, res) => {
       const { id } = req.params;
       const { title, content } = req.body;
+
+      console.log("Received PUT request for ID:", id); // Check if the ID is being received
+      console.log("Payload:", { title, content }); // Check the payload
+
+      if (!ObjectId.isValid(id)) {
+        return res.status(400).json({ message: "Invalid ID" });
+      }
 
       if (!title || !content) {
         return res
@@ -89,6 +100,8 @@ const main = async () => {
         } else {
           res.status(404).json({ message: "Note not found!" });
         }
+
+        console.log("update result: ", result);
       } catch (err) {
         console.error("Error updating note: ", err);
         res.status(500).json({ message: "Failed to update note" });
