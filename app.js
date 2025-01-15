@@ -7,7 +7,7 @@ const app = express();
 const port = 8000;
 app.use(
   cors({
-    origin: "https://arbazwizard01.github.io/NoteNest/",
+    origin: "https://arbazwizard01.github.io",
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
