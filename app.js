@@ -5,9 +5,14 @@ const bodyParser = require("body-parser");
 
 const app = express();
 const port = 8000;
-
+app.use(
+  cors({
+    origin: "https://arbazwizard01.github.io/NoteNest/",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
 app.use(bodyParser.json());
-app.use(cors());
 app.use((req, res, next) => {
   console.log(`Incoming request: [${req.method}] ${req.url}`);
   next();
@@ -31,7 +36,7 @@ const main = async () => {
 
     app.post("/", async (req, res) => {
       const { title, content } = req.body;
-      if (!title || !content) {
+      if (!title) {
         return res.status(400).json({ message: "Title and Content Required" });
       }
       const newNote = { title, content, createdAt: new Date() };
@@ -76,14 +81,9 @@ const main = async () => {
     app.put("/:id", async (req, res) => {
       const { id } = req.params;
       const { title, content } = req.body;
-
-      console.log("Received PUT request for ID:", id); // Check if the ID is being received
-      console.log("Payload:", { title, content }); // Check the payload
-
       if (!ObjectId.isValid(id)) {
         return res.status(400).json({ message: "Invalid ID" });
       }
-
       if (!title || !content) {
         return res
           .status(400)
