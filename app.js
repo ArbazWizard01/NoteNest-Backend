@@ -2,12 +2,19 @@ const express = require("express");
 const { MongoClient, ObjectId } = require("mongodb");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-
+const aiRoutes = require("./routes/aiRoutes");
 const app = express();
 const port = 8000;
+
+const allowedOrigins = [
+  "https://arbazwizard01.github.io/",
+  "http://localhost:3000",
+];
+
+app.use("/ai", aiRoutes);
 app.use(
   cors({
-    origin: "https://arbazwizard01.github.io",
+    origin: allowedOrigins,
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
