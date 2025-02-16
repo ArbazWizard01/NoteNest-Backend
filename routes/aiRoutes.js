@@ -1,8 +1,9 @@
 const express = require("express");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-
+const cors = require("cors")
 const router = express.Router();
 
+router.use(cors())
 // Secure API key from environment variables (DO NOT expose in code)
 const apiKey =
   process.env.GOOGLE_AI_KEY || "AIzaSyBHatBxmW0JvvmpHbDRL3Es81PcG8AEaKk";
